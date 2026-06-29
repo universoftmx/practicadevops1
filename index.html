@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Pulse — Panel de estado</title>
+<style>
+  :root{
+    --bg: #0B1220;
+    --panel: #111B2E;
+    --panel-border: #1F2D47;
+    --text: #E5ECF6;
+    --muted: #8493AC;
+    --ok: #34D399;
+    --ok-bg: rgba(52,211,153,0.12);
+    --warn: #FBBF24;
+    --warn-bg: rgba(251,191,36,0.12);
+    --pending: #64748B;
+    --pending-bg: rgba(100,116,139,0.14);
+    --accent: #5EEAD4;
+    --mono: "IBM Plex Mono", "Consolas", "SFMono-Regular", Menlo, monospace;
+    --sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+  }
+
+  .wrap{
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .dot-logo{
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 4px var(--ok-bg);
+    flex-shrink:0;
+  }
+
+  .brand h1{
+    font-family: var(--mono);
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    margin:0;
+  }
+
+  .brand p{
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .version-tag{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--panel-border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--panel);
+    white-space: nowrap;
+  }
+
+  .hero{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+
+  .hero-status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 8px;
+  }
+
+  .pulse{
+    width:10px; height:10px;
+    border-radius:50%;
+    background: var(--ok);
+    position: relative;
+  }
+  .pulse::after{
+    content:"";
+    position:absolute;
+    inset:-6px;
+    border-radius:50%;
+    border: 2px solid var(--ok);
+    opacity: 0.55;
+    animation: pulse 2.2s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{ transform: scale(0.6); opacity:0.6; }
+    100%{ transform: scale(1.8); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .pulse::after{ animation: none; }
+  }
+
+  .hero-status span{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ok);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .hero h2{
+    margin: 0 0 6px;
+    font-size: 20px;
+  }
+
+  .hero p{
+    margin:0;
+    color: var(--muted);
+    font-size: 14.5px;
+    max-width: 560px;
+  }
+
+  h3.section-title{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 14px;
+  }
+
+  .pipeline{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  @media (max-width: 640px){
+    .pipeline{ grid-template-columns: 1fr; }
+  }
+
+  .stage{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .stage-top{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    margin-bottom: 10px;
+  }
+
+  .stage-top h4{
+    margin:0;
+    font-size: 15px;
+  }
+
+  .badge{
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge.ok{ background: var(--ok-bg); color: var(--ok); }
+  .badge.warn{ background: var(--warn-bg); color: var(--warn); }
+  .badge.pending{ background: var(--pending-bg); color: var(--pending); }
+
+  .stage p{
+    margin:0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ZONA DE PRACTICA 3 (branching): agrega aqui el estilo .login-card cuando crees la rama feature-login */
+
+  footer{
+    border-top: 1px solid var(--panel-border);
+    padding-top: 18px;
+    display:flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header>
+      <div class="brand">
+        <div class="dot-logo"></div>
+        <div>
+          <h1>DevOps Pulse</h1>
+          <p>Panel de estado del pipeline — proyecto de práctica</p>
+        </div>
+      </div>
+      <div class="version-tag">build #128 · main</div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-status">
+        <span class="pulse"></span>
+        <span>Todos los sistemas operativos</span>
+      </div>
+      <h2>El pipeline se ejecutó correctamente</h2>
+      <p>Este archivo es el proyecto de ejemplo para las prácticas de Git y GitHub del curso de DevOps. Úsalo como el contenido que vas a versionar, clonar, ramificar y fusionar.</p>
+    </section>
+
+    <h3 class="section-title">Etapas del pipeline</h3>
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stage-top">
+          <h4>Build</h4>
+          <span class="badge ok">Aprobado</span>
+        </div>
+        <p>Compilación e instalación de dependencias sin errores.</p>
+      </div>
+      <div class="stage">
+        <div class="stage-top">
+          <h4>Test</h4>
+          <span class="badge ok">Aprobado</span>
+        </div>
+        <p>Pruebas unitarias ejecutadas correctamente.</p>
+      </div>
+      <div class="stage">
+        <div class="stage-top">
+          <h4>Deploy</h4>
+          <span class="badge pending">Pendiente</span>
+        </div>
+        <p>Esperando aprobación manual para desplegar a producción.</p>
+      </div>
+    </div>
+
+    <!-- ZONA DE PRACTICA 3 (branching): aqui se agregara la nueva tarjeta de la rama feature-login -->
+
+    <footer>
+      <span>Proyecto de práctica — Git &amp; GitHub</span>
+      <span>Versión 1.0.0 — Última actualización: 28 de junio de 2026</span>
+    </footer>
+
+  </div>
+</body>
+</html>
